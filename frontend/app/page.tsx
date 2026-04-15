@@ -47,7 +47,7 @@ export default function LoginPage() {
                         label="Password"
                         variant="outlined"
                         name="password"
-                        type="text"
+                        type="password"
                         size="small"
                         onChange={handleOnChange}
                         required
