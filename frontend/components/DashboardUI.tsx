@@ -19,12 +19,13 @@ import {
     Menu,
     MenuItem,
     Container,
-    Grid,
     Paper,
     Card,
     CardContent,
     useTheme,
     useMediaQuery,
+    // IMPORT THE OLD GRID HERE
+    Grid,
 } from "@mui/material"
 import {
     Menu as MenuIcon,
@@ -35,7 +36,7 @@ import {
     Notifications as NotificationsIcon,
     ChevronLeft as ChevronLeftIcon,
 } from "@mui/icons-material"
-import { logoutAction } from "@/app/actions" // Import the action
+import { logoutAction } from "@/app/actions"
 
 const drawerWidth = 260
 
@@ -52,15 +53,9 @@ export default function DashboardUI() {
         setAnchorEl(event.currentTarget)
     const handleMenuClose = () => setAnchorEl(null)
 
-    // ... inside the component ...
     const handleLogout = async () => {
         try {
-            // 1. Call the server action to delete the cookie
             await logoutAction()
-
-            // 2. Refresh the current route (/)
-            // The server will re-run app/page.tsx, see the cookie is gone,
-            // and swap back to the LoginForm automatically.
             router.refresh()
         } catch (error) {
             console.error("Logout failed:", error)
@@ -69,8 +64,8 @@ export default function DashboardUI() {
 
     const menuItems = [
         { text: "Dashboard", icon: <DashboardIcon />, active: true },
-        { text: "My Profile", icon: <PersonIcon />, active: false },
-        { text: "Academics", icon: <SchoolIcon />, active: false },
+        { text: "Book Facility", icon: <PersonIcon />, active: false },
+        { text: "My Reservations", icon: <PersonIcon />, active: false },
     ]
 
     const drawerContent = (
@@ -97,24 +92,24 @@ export default function DashboardUI() {
                 )}
             </Toolbar>
             <Divider />
-            <List sx={{ flexGrow: 1, px: 1 }}>
+            <List sx={{ flexGrow: 1, px: 1, mt: 1 }}>
                 {menuItems.map((item) => (
-                    <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
+                    <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
                         <ListItemButton
                             selected={item.active}
                             sx={{
                                 borderRadius: 2,
                                 "&.Mui-selected": {
-                                    bgcolor: "primary.light",
-                                    color: "primary.main",
+                                    bgcolor: "primary.main",
+                                    color: "white",
+                                    "&:hover": { bgcolor: "primary.dark" },
                                 },
                             }}
                         >
                             <ListItemIcon
                                 sx={{
-                                    color: item.active
-                                        ? "primary.main"
-                                        : "inherit",
+                                    color: item.active ? "white" : "inherit",
+                                    minWidth: 40,
                                 }}
                             >
                                 {item.icon}
@@ -123,6 +118,8 @@ export default function DashboardUI() {
                                 primary={item.text}
                                 primaryTypographyProps={{
                                     fontWeight: item.active ? 600 : 400,
+                                    fontSize: "0.9rem",
+                                    color: item.active ? "white" : "inherit",
                                 }}
                             />
                         </ListItemButton>
@@ -136,10 +133,13 @@ export default function DashboardUI() {
                         onClick={handleLogout}
                         sx={{ borderRadius: 2, color: "error.main" }}
                     >
-                        <ListItemIcon>
+                        <ListItemIcon sx={{ minWidth: 40 }}>
                             <LogoutIcon color="error" />
                         </ListItemIcon>
-                        <ListItemText primary="Logout" />
+                        <ListItemText
+                            primary="Logout"
+                            primaryTypographyProps={{ fontSize: "0.9rem" }}
+                        />
                     </ListItemButton>
                 </ListItem>
             </List>
@@ -147,15 +147,14 @@ export default function DashboardUI() {
     )
 
     return (
-        <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f0f2f5" }}>
-            {/* Navbar */}
+        <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "#f8f9fa" }}>
             <AppBar
                 position="fixed"
                 sx={{
                     zIndex: (theme) => theme.zIndex.drawer + 1,
                     bgcolor: "white",
                     color: "text.primary",
-                    boxShadow: "0 1px 10px rgba(0,0,0,0.05)",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
                 }}
             >
                 <Toolbar>
@@ -173,36 +172,33 @@ export default function DashboardUI() {
                     >
                         Dashboard
                     </Typography>
-
                     <IconButton color="inherit" sx={{ mr: 1 }}>
                         <NotificationsIcon />
                     </IconButton>
-
                     <Box
                         onClick={handleMenuOpen}
                         sx={{
                             display: "flex",
                             alignItems: "center",
                             cursor: "pointer",
-                            gap: 1,
+                            gap: 1.5,
                         }}
                     >
                         <Avatar
                             sx={{
                                 bgcolor: "primary.main",
-                                width: 35,
-                                height: 35,
+                                width: 32,
+                                height: 32,
                             }}
                         >
                             E
                         </Avatar>
                         {!isMobile && (
-                            <Typography variant="body2" fontWeight={600}>
+                            <Typography variant="subtitle2" fontWeight={600}>
                                 Elvis John
                             </Typography>
                         )}
                     </Box>
-
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
@@ -211,7 +207,6 @@ export default function DashboardUI() {
                         <MenuItem onClick={handleMenuClose}>
                             My Profile
                         </MenuItem>
-                        <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
                         <Divider />
                         <MenuItem
                             onClick={handleLogout}
@@ -223,7 +218,6 @@ export default function DashboardUI() {
                 </Toolbar>
             </AppBar>
 
-            {/* Sidebar (Responsive) */}
             <Drawer
                 variant={isMobile ? "temporary" : "persistent"}
                 open={open}
@@ -234,168 +228,36 @@ export default function DashboardUI() {
                     "& .MuiDrawer-paper": {
                         width: drawerWidth,
                         boxSizing: "border-box",
-                        borderRight: "none",
-                        boxShadow: "2px 0 10px rgba(0,0,0,0.03)",
                     },
                 }}
             >
                 {drawerContent}
             </Drawer>
 
-            {/* Main Content Area */}
-            <Box
-                component="main"
-                sx={{
-                    flexGrow: 1,
-                    p: 3,
-                    width: { sm: `calc(100% - ${drawerWidth}px)` },
-                    transition: theme.transitions.create("margin", {
-                        easing: theme.transitions.easing.sharp,
-                        duration: theme.transitions.duration.leavingScreen,
-                    }),
-                    ...(open &&
-                        !isMobile && {
-                            marginLeft: 0,
-                        }),
-                }}
-            >
-                <Toolbar /> {/* Spacer for the fixed AppBar */}
+            <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+                <Toolbar />
                 <Container maxWidth="lg">
+                    {/* BACK TO OLD GRID SYNTAX */}
                     <Grid container spacing={3}>
-                        {/* Header Card */}
                         <Grid item xs={12}>
                             <Paper
                                 sx={{
                                     p: 4,
                                     borderRadius: 4,
                                     background:
-                                        "linear-gradient(45deg, #1976d2 30%, #42a5f5 90%)",
+                                        "linear-gradient(135deg, #1976d2 0%, #1565c0 100%)",
                                     color: "white",
-                                    boxShadow:
-                                        "0 8px 20px rgba(25, 118, 210, 0.2)",
                                 }}
                             >
-                                <Typography variant="h4" fontWeight={700}>
+                                <Typography variant="h4" fontWeight={800}>
                                     Welcome, Elvis!
                                 </Typography>
                                 <Typography
                                     variant="body1"
-                                    sx={{ opacity: 0.9, mt: 1 }}
+                                    sx={{ opacity: 0.8, mt: 1 }}
                                 >
-                                    Bachelor of Science in Information
-                                    Technology (1st Year)
+                                    BSIT - 1st Year
                                 </Typography>
-                            </Paper>
-                        </Grid>
-
-                        {/* Quick Stats */}
-                        {[
-                            {
-                                label: "Attendance",
-                                value: "94%",
-                                color: "#4caf50",
-                            },
-                            {
-                                label: "Pending Tasks",
-                                value: "5",
-                                color: "#ff9800",
-                            },
-                            {
-                                label: "Messages",
-                                value: "12",
-                                color: "#2196f3",
-                            },
-                        ].map((stat) => (
-                            <Grid item xs={12} sm={4} key={stat.label}>
-                                <Card
-                                    sx={{
-                                        borderRadius: 3,
-                                        boxShadow:
-                                            "0 4px 12px rgba(0,0,0,0.05)",
-                                    }}
-                                >
-                                    <CardContent sx={{ textAlign: "center" }}>
-                                        <Typography
-                                            color="text.secondary"
-                                            variant="overline"
-                                            fontWeight={700}
-                                        >
-                                            {stat.label}
-                                        </Typography>
-                                        <Typography
-                                            variant="h4"
-                                            fontWeight={800}
-                                            sx={{ color: stat.color }}
-                                        >
-                                            {stat.value}
-                                        </Typography>
-                                    </CardContent>
-                                </Card>
-                            </Grid>
-                        ))}
-
-                        {/* Info Sections */}
-                        <Grid item xs={12} md={8}>
-                            <Paper
-                                sx={{ p: 3, borderRadius: 3, minHeight: 400 }}
-                            >
-                                <Typography
-                                    variant="h6"
-                                    fontWeight={700}
-                                    gutterBottom
-                                >
-                                    Recent Announcements
-                                </Typography>
-                                <Divider sx={{ mb: 2 }} />
-                                <Box
-                                    sx={{
-                                        p: 5,
-                                        textAlign: "center",
-                                        color: "text.secondary",
-                                    }}
-                                >
-                                    <Typography>
-                                        No announcements today. Check back
-                                        later!
-                                    </Typography>
-                                </Box>
-                            </Paper>
-                        </Grid>
-
-                        <Grid item xs={12} md={4}>
-                            <Paper
-                                sx={{ p: 3, borderRadius: 3, minHeight: 400 }}
-                            >
-                                <Typography
-                                    variant="h6"
-                                    fontWeight={700}
-                                    gutterBottom
-                                >
-                                    Quick Actions
-                                </Typography>
-                                <Divider sx={{ mb: 2 }} />
-                                <List>
-                                    {[
-                                        "View Schedule",
-                                        "Enrollment Status",
-                                        "Grade Portal",
-                                    ].map((text) => (
-                                        <ListItem
-                                            key={text}
-                                            disablePadding
-                                            sx={{ mb: 1 }}
-                                        >
-                                            <ListItemButton
-                                                sx={{
-                                                    bgcolor: "#f8f9fa",
-                                                    borderRadius: 2,
-                                                }}
-                                            >
-                                                <ListItemText primary={text} />
-                                            </ListItemButton>
-                                        </ListItem>
-                                    ))}
-                                </List>
                             </Paper>
                         </Grid>
                     </Grid>
