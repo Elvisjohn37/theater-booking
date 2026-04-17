@@ -60,7 +60,7 @@ export default function RegisterForm() {
     useEffect(() => {
         async function fetchTypes() {
             try {
-                const res = await fetch("http://localhost:3000/api/auth/types")
+                const res = await fetch("http://localhost:8080/api/auth/types")
                 const data = await res.json()
                 if (res.ok) setUserTypes(data)
             } catch (err) {
@@ -81,7 +81,7 @@ export default function RegisterForm() {
     const handleSubmit = async () => {
         setIsLoading(true)
         try {
-            const res = await fetch("http://localhost:3000/api/auth/register", {
+            const res = await fetch("http://localhost:8080/api/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
